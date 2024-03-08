@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,7 +16,7 @@ class ImageTranslationPage extends StatefulWidget {
 }
 
 class _ImageTranslationPageState extends State<ImageTranslationPage> {
-  File? _image;
+  List<int>? _imageBytes;
   String _recognizedText = '';
   String _translatedText = '';
   bool _isLoading = false;
@@ -39,21 +40,18 @@ class _ImageTranslationPageState extends State<ImageTranslationPage> {
         quality: 70, // Adjust the quality as needed
       );
 
-      setState(() {
-        if (compressedImageFile != null) {
-          _image = File(compressedImageFile.path);
-          final compressedFileSize = _image?.length();
-          print(compressedFileSize.toString());
+      if (compressedImageFile != null) {
+        final bytes = await compressedImageFile.readAsBytes();
+        setState(() {
+          _imageBytes = bytes;
           _recognizedText = ''; // Reset recognized text
-        } else {
-          print('No image selected.');
-        }
-      });
+        });
+      }
     }
   }
 
   Future<void> _uploadImage() async {
-    if (_image == null) {
+    if (_imageBytes == null) {
       print('Please select an image first.');
       return;
     }
@@ -66,12 +64,10 @@ class _ImageTranslationPageState extends State<ImageTranslationPage> {
       Dio dio = Dio();
       String url = 'https://ocr.megalogic.id';
 
-      FormData formData = FormData.fromMap({
-        'image':
-            await MultipartFile.fromFile(_image!.path, filename: 'image.jpg'),
-      });
-
-      var response = await dio.post(url, data: formData);
+      var response = await dio.post(
+        url,
+        data: {'image': _imageBytes},
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -133,15 +129,16 @@ class _ImageTranslationPageState extends State<ImageTranslationPage> {
                 ),
                 child: Text('Pilih gambar'),
               ),
-              if (_image != null) SizedBox(height: 20),
-              if (_image != null)
+              if (_imageBytes != null) SizedBox(height: 20),
+              if (_imageBytes != null)
                 Container(
                   height: 200,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Image.file(_image!, fit: BoxFit.cover),
+                  child: Image.memory(Uint8List.fromList(_imageBytes!),
+                      fit: BoxFit.cover),
                 ),
               SizedBox(height: 20),
               ElevatedButton(

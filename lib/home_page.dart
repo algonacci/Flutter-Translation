@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translation/components/button.dart';
 import 'package:flutter_translation/image_translation_page.dart';
 import 'package:flutter_translation/sound_translation_page.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +22,7 @@ class HomePage extends StatelessWidget {
           children: [
             InkWell(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SoundTranslationPage(),
-                  ),
-                );
+                Get.to(() => SoundTranslationPage());
               },
               child: Button(
                 text: 'Translasi Suara',
@@ -35,12 +31,7 @@ class HomePage extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ImageTranslationPage(),
-                  ),
-                );
+                Get.to(() => ImageTranslationPage());
               },
               child: Button(
                 text: 'Translasi Gambar',

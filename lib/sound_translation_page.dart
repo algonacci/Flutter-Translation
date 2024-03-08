@@ -77,7 +77,7 @@ class _SoundTranslationPageState extends State<SoundTranslationPage> {
       });
 
       var response = await dio.post(
-        "https://stt.megalogic.id",
+        "https://tts.megalogic.id",
         data: formData,
       );
 
@@ -105,7 +105,7 @@ class _SoundTranslationPageState extends State<SoundTranslationPage> {
       Dio dio = Dio();
       try {
         var response = await dio.post(
-          "https://stt.megalogic.id",
+          "https://tts.megalogic.id",
           data: {
             "text": _translationResult,
             "source": "ar", // Target language of the previous translation
